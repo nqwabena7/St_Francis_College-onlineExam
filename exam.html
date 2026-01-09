@@ -4,59 +4,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>University Online Examination</title>
+
 <style>
-body{font-family:Segoe UI,Arial,sans-serif;margin:0;background:url('background.jpg') no-repeat center center/cover;background-size:cover;height:100vh;display:flex;justify-content:center;align-items:center;}
-body::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:0;}
-.exam-container{position:relative;z-index:1;max-width:900px;margin:30px auto;background:rgba(255,255,255,0.95);border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,0.25);padding:35px;}
-.header{text-align:center;border-bottom:1px solid #eee;padding-bottom:15px;}
-.header h1{margin:0;color:#002147;}
-.header h3{margin-top:6px;color:#444;font-weight:600;}
-.timer{margin-top:8px;font-size:18px;font-weight:bold;color:#dc3545;}
-.instructions{color:#555;margin-top:8px;font-size:14px;}
-.start-screen input{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #ccc;}
-.start-screen button{width:100%;padding:14px;background:#002147;color:#fff;border:none;border-radius:10px;font-size:16px;cursor:pointer;}
-.question-wrapper{display:none;justify-content:center;margin-top:30px;}
-.question-box{background:#eef3ff;padding:30px;border-radius:16px;width:100%;max-width:650px;}
-.question-count{font-weight:600;color:#002147;margin-bottom:15px;}
-.options label{display:block;background:#fff;padding:14px;margin:10px 0;border-radius:10px;border:1px solid #ccc;cursor:pointer;}
-.nav-buttons{display:none;justify-content:space-between;margin-top:30px;}
-button{padding:12px 28px;border:none;border-radius:10px;cursor:pointer;}
-.prev{background:#6c757d;color:#fff;}
-.next{background:#002147;color:#fff;}
-.submit{display:none;margin-top:25px;width:100%;background:#28a745;color:#fff;font-size:16px;}
-.warning{text-align:center;color:#dc3545;font-weight:600;margin-top:15px;}
-@media(max-width:480px){.exam-container{padding:25px;}h1{font-size:22px;}p,.instructions{font-size:15px;}button,.start-screen button{font-size:15px;}}
+:root{
+  --primary:#002147;
+  --accent:#28a745;
+  --card:#eef3ff;
+  --danger:#dc3545;
+}
+
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:linear-gradient(135deg,#e9eef5,#f8fafc);
+  margin:0;
+}
+
+.exam-container{
+  max-width:900px;
+  margin:30px auto;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  padding:35px;
+}
+
+.header{text-align:center;border-bottom:1px solid #eee;padding-bottom:15px}
+.header h1{margin:0;color:var(--primary)}
+.timer{margin-top:8px;font-size:18px;font-weight:bold;color:var(--danger)}
+.instructions{font-size:14px;color:#555}
+
+.start-screen input{
+  width:100%;padding:12px;margin:10px 0;
+  border-radius:8px;border:1px solid #ccc
+}
+.start-screen button{
+  width:100%;padding:14px;
+  background:var(--primary);color:#fff;
+  border:none;border-radius:10px;font-size:16px;cursor:pointer
+}
+
+.question-wrapper{display:none;justify-content:center;margin-top:30px}
+.question-box{
+  background:var(--card);
+  padding:30px;border-radius:16px;
+  width:100%;max-width:650px
+}
+.question-count{font-weight:600;color:var(--primary);margin-bottom:15px}
+.options label{
+  display:block;background:#fff;
+  padding:14px;margin:10px 0;
+  border-radius:10px;border:1px solid #ccc;
+  cursor:pointer
+}
+
+.nav-buttons{display:none;justify-content:space-between;margin-top:30px}
+button{padding:12px 28px;border:none;border-radius:10px;cursor:pointer}
+.prev{background:#6c757d;color:#fff}
+.next{background:var(--primary);color:#fff}
+.submit{
+  display:none;margin-top:25px;
+  width:100%;background:var(--accent);
+  color:#fff;font-size:16px
+}
+.warning{text-align:center;color:var(--danger);font-weight:600;margin-top:15px}
 </style>
 </head>
+
 <body>
+
 <div class="exam-container">
 
 <div class="header">
-<h1>University Online Examination</h1>
-<h3>Principles and Practices of Education</h3>
-<div class="timer" id="timer">Time Left: 30:00</div>
-<p class="instructions">Do not refresh or switch tabs. Three violations will auto-submit your exam.</p>
+  <h1>University Online Examination(College of Education)</h1>
+  <h3>Principles and Practices of Education</h3>
+  <div class="timer" id="timer">Time Left: 30:00</div>
+  <p class="instructions">
+    Do not refresh or switch tabs. Three violations will auto-submit your exam.
+  </p>
 </div>
 
+<!-- STUDENT DETAILS -->
 <div class="start-screen" id="startScreen">
-<h3>Enter Your Details</h3>
-<input id="studentName" placeholder="Student Full Name">
-<input id="collegeName" placeholder="College Name">
-<input id="phoneNumber" placeholder="Phone Number">
-<button onclick="startExam()">Get Started</button>
+  <h3>Student Information</h3>
+  <input id="studentName" placeholder="Student Full Name">
+  <input id="collegeName" placeholder="College Name">
+  <input id="phoneNumber" placeholder="Phone Number">
+  <button onclick="startExam()">Start Examination</button>
 </div>
 
+<!-- EXAM AREA -->
 <div class="question-wrapper" id="examArea">
-<div class="question-box">
-<div class="question-count" id="questionCount"></div>
-<div id="questionText"></div>
-<div class="options" id="options"></div>
-</div>
+  <div class="question-box">
+    <div class="question-count" id="questionCount"></div>
+    <div id="questionText"></div>
+    <div class="options" id="options"></div>
+  </div>
 </div>
 
 <div class="nav-buttons" id="navButtons">
-<button class="prev" onclick="prevQuestion()">Previous</button>
-<button class="next" onclick="nextQuestion()">Next</button>
+  <button class="prev" onclick="prevQuestion()">Previous</button>
+  <button class="next" onclick="nextQuestion()">Next</button>
 </div>
 
 <button class="submit" id="submitBtn" onclick="submitExam()">Submit Examination</button>
@@ -65,92 +112,145 @@ button{padding:12px 28px;border:none;border-radius:10px;cursor:pointer;}
 </div>
 
 <script>
-const questions=[
-{q:"Which statement is not completely true about education?",o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],c:"Education is simply socialization."},
-{q:"Education that trains emotions and social behaviour relates to?",o:["Affective","Cognitive","Emotive","Psychomotor"],c:"Affective"},
-{q:"Learning that takes place at any learning site is?",o:["Formal","Informal","Liberal","Non-formal"],c:"Informal"},
-{q:"Critical thinking belongs to which domain?",o:["Affective","Cognitive","Psychomotor","Thinking"],c:"Cognitive"},
-{q:"Which cannot be regarded as a trait of liberal education?",o:["Acquisition of manipulative skills","Critical thinking","Emotional intelligence","Reflection"],c:"Acquisition of manipulative skills"},
-{q:"Education that equips individuals with economic skills is?",o:["Formal","Informal","Liberal","Vocational"],c:"Vocational"},
-{q:"Using counters to teach mathematics applies?",o:["Concrete to abstract","Deductive to inductive","Known to unknown","Simple to complex"],c:"Concrete to abstract"},
-{q:"Linking lessons to learners’ experiences follows?",o:["Concrete to abstract","Easy to difficult","Known to unknown","Simple to complex"],c:"Known to unknown"},
-{q:"Awarding certificates relates to which function?",o:["Certification","Economic","Political","Selection"],c:"Certification"},
-{q:"Teaching as an art suggests?",o:["Teachers are made","Teachers are not born","Teaching involves intuition","Teaching requires training"],c:"Teaching involves intuition"},
-{q:"Andragogy should be adopted at?",o:["Basic","Kindergarten","Secondary","Tertiary"],c:"Tertiary"},
-{q:"Micro-teaching helps to?",o:["Develop specific teaching competencies","Full 90-minute lessons","Off-campus teaching","Only practicing teachers"],c:"Develop specific teaching competencies"},
-{q:"Checking if lesson objectives were achieved is?",o:["Assessment teaching","Lesson evaluation","Reflective teaching","Team teaching"],c:"Lesson evaluation"},
-{q:"Responsive Classroom approach focuses on?",o:["Self-paced learning","Independent learning","Academic and social skills","Safe, joyful classrooms"],c:"Safe, joyful classrooms"},
-{q:"Foremost agency for child education is?",o:["Church","Community","Home","School"],c:"Home"},
-{q:"Which agency of socialization is non-personal?",o:["Home","Mass media","Peer group","School"],c:"Mass media"},
-{q:"Academic or grammar education is?",o:["Formal","Liberal","Non-formal","Vocational"],c:"Liberal"},
-{q:"A challenge of child-centred education is?",o:["Inexpensive","Not feasible for small class","Time consuming","Undermines discipline"],c:"Time consuming"},
-{q:"Andragogy assumes motivation becomes intrinsic.",o:["False","True"],c:"True"},
-{q:"Teacher dictates everything in child-centred education.",o:["False","True"],c:"False"}
+const questions = [
+ {q:"Which statement is not completely true about education?",
+  o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],
+  c:"Education is simply socialization."},
+
+ {q:"Education that trains emotions and social behaviour relates to?",
+  o:["Affective","Cognitive","Emotive","Psychomotor"],c:"Affective"},
+
+ {q:"Learning that takes place at any learning site is?",
+  o:["Formal","Informal","Liberal","Non-formal"],c:"Informal"},
+
+ {q:"Critical thinking belongs to which domain?",
+  o:["Affective","Cognitive","Psychomotor","Thinking"],c:"Cognitive"},
+
+ {q:"Which cannot be regarded as a trait of liberal education?",
+  o:["Acquisition of manipulative skills","Critical thinking","Emotional intelligence","Reflection"],
+  c:"Acquisition of manipulative skills"},
+
+ {q:"Education that equips individuals with economic skills is?",
+  o:["Formal","Informal","Liberal","Vocational"],c:"Vocational"},
+
+ {q:"Using counters to teach mathematics applies?",
+  o:["Concrete to abstract","Deductive to inductive","Known to unknown","Simple to complex"],
+  c:"Concrete to abstract"},
+
+ {q:"Linking lessons to learners’ experiences follows?",
+  o:["Concrete to abstract","Easy to difficult","Known to unknown","Simple to complex"],
+  c:"Known to unknown"},
+
+ {q:"Awarding certificates relates to which function?",
+  o:["Certification","Economic","Political","Selection"],c:"Certification"},
+
+ {q:"Teaching as an art suggests?",
+  o:["Teachers are made","Teachers are not born","Teaching involves intuition","Teaching requires training"],
+  c:"Teaching involves intuition"},
+
+ {q:"Andragogy should be adopted at?",
+  o:["Basic","Kindergarten","Secondary","Tertiary"],c:"Tertiary"},
+
+ {q:"Micro-teaching helps to?",
+  o:["Develop specific teaching competencies","Full 90-minute lessons","Off-campus teaching","Only practicing teachers"],
+  c:"Develop specific teaching competencies"},
+
+ {q:"Checking if lesson objectives were achieved is?",
+  o:["Assessment teaching","Lesson evaluation","Reflective teaching","Team teaching"],
+  c:"Lesson evaluation"},
+
+ {q:"Responsive Classroom approach focuses on?",
+  o:["Self-paced learning","Independent learning","Academic and social skills","Safe, joyful classrooms"],
+  c:"Safe, joyful classrooms"},
+
+ {q:"Foremost agency for child education is?",
+  o:["Church","Community","Home","School"],c:"Home"},
+
+ {q:"Which agency of socialization is non-personal?",
+  o:["Home","Mass media","Peer group","School"],c:"Mass media"},
+
+ {q:"Academic or grammar education is?",
+  o:["Formal","Liberal","Non-formal","Vocational"],c:"Liberal"},
+
+ {q:"A challenge of child-centred education is?",
+  o:["Inexpensive","Not feasible for small class","Time consuming","Undermines discipline"],
+  c:"Time consuming"},
+
+ {q:"Andragogy assumes motivation becomes intrinsic.",
+  o:["False","True"],c:"True"},
+
+ {q:"Teacher dictates everything in child-centred education.",
+  o:["False","True"],c:"False"}
 ];
 
-let current=0, answers={}, student={}, violations=0, timeLeft=30*60, timer;
+let current=0, answers={}, student={}, violations=0;
+let timeLeft=30*60, timer;
+const timerDisplay=document.getElementById("timer");
 
 function startExam(){
- student.name=document.getElementById("studentName").value.trim();
- student.college=document.getElementById("collegeName").value.trim();
- student.phone=document.getElementById("phoneNumber").value.trim();
- if(!student.name||!student.college||!student.phone){alert("Please fill all fields");return;}
- document.getElementById("startScreen").style.display="none";
- document.getElementById("examArea").style.display="flex";
- document.getElementById("navButtons").style.display="flex";
- loadQuestion();
- startTimer();
+  student.name=studentName.value.trim();
+  student.college=collegeName.value.trim();
+  student.phone=phoneNumber.value.trim();
+  if(!student.name||!student.college||!student.phone){
+    alert("Please fill all fields");
+    return;
+  }
+  startScreen.style.display="none";
+  examArea.style.display="flex";
+  navButtons.style.display="flex";
+  loadQuestion();
+  startTimer();
 }
 
 function loadQuestion(){
- const q=questions[current];
- document.getElementById("questionCount").innerText=`Question ${current+1} of ${questions.length}`;
- document.getElementById("questionText").innerHTML=`<strong>${q.q}</strong>`;
- document.getElementById("options").innerHTML=q.o.map(o=>`<label><input type="radio" name="opt" value="${o}" ${answers[current]==o?"checked":""}>${o}</label>`).join("");
- document.getElementById("submitBtn").style.display=current===questions.length-1?"block":"none";
+  const q=questions[current];
+  questionCount.innerText=`Question ${current+1} of ${questions.length}`;
+  questionText.innerHTML=`<strong>${q.q}</strong>`;
+  options.innerHTML=q.o.map(o=>`
+    <label>
+      <input type="radio" name="opt" value="${o}" ${answers[current]==o?"checked":""}>
+      ${o}
+    </label>`).join("");
+  submitBtn.style.display=current===questions.length-1?"block":"none";
 }
 
-document.getElementById("options").onchange=e=>answers[current]=e.target.value;
-function nextQuestion(){if(current<questions.length-1){current++;loadQuestion();}}
-function prevQuestion(){if(current>0){current--;loadQuestion();}}
+options.onchange=e=>answers[current]=e.target.value;
+function nextQuestion(){if(current<questions.length-1){current++;loadQuestion()}}
+function prevQuestion(){if(current>0){current--;loadQuestion()}}
 
 function startTimer(){
- timer=setInterval(()=>{
- let m=Math.floor(timeLeft/60), s=timeLeft%60;
- document.getElementById("timer").innerText=`Time Left: ${m}:${String(s).padStart(2,"0")}`;
- if(timeLeft--<=0) submitExam();
- },1000);
+  timer=setInterval(()=>{
+    let m=Math.floor(timeLeft/60);
+    let s=timeLeft%60;
+    timerDisplay.innerText=`Time Left: ${m}:${String(s).padStart(2,"0")}`;
+    if(timeLeft--<=0) submitExam();
+  },1000);
 }
 
-document.addEventListener("visibilitychange",()=>{if(document.hidden){violations++;document.getElementById("warningText").innerText=`Tab switch detected (${violations}/3)`; if(violations>=3) submitExam();}});
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    violations++;
+    warningText.innerText=`Tab switch detected (${violations}/3)`;
+    if(violations>=3) submitExam();
+  }
+});
 
 function submitExam(){
- clearInterval(timer);
- let score=0;
- questions.forEach((q,i)=>{if(answers[i]===q.c) score++;});
- let percent=Math.round(score/questions.length*100);
-
- const result={name:student.name,college:student.college,phone:student.phone,score,total:questions.length,percentage:percent,date:new Date().toLocaleString()};
-
- // Auto download CSV
- let csv="Name,College,Phone,Score,Total,Percentage,Date\r\n";
- csv+=[result.name,result.college,result.phone,result.score,result.total,result.percentage,result.date].join(",")+"\r\n";
- const link=document.createElement("a");
- link.setAttribute("href","data:text/csv;charset=utf-8,"+encodeURIComponent(csv));
- link.setAttribute("download",`exam_result_${student.name.replace(/\s+/g,"_")}.csv`);
- document.body.appendChild(link);link.click();document.body.removeChild(link);
-
- document.querySelector(".exam-container").innerHTML=`
- <h2 style="text-align:center;color:#002147">Exam Result</h2>
- <p style="text-align:center;font-size:18px">
- <b>Name:</b>${student.name}<br>
- <b>College:</b>${student.college}<br>
- <b>Phone:</b>${student.phone}<br><br>
- <b>Score:</b>${score}/${questions.length}<br>
- <b>Percentage:</b>${percent}%
- </p>
- <p style="text-align:center;margin-top:20px;color:#555;">Your result has been downloaded as CSV. Admin can collect these files to compile results.</p>`;
+  clearInterval(timer);
+  let score=0;
+  questions.forEach((q,i)=>{if(answers[i]==q.c)score++});
+  let percent=Math.round(score/questions.length*100);
+  document.querySelector(".exam-container").innerHTML=`
+  <h2 style="text-align:center;color:#002147">Exam Result</h2>
+  <p style="text-align:center;font-size:18px">
+    <b>Name:</b> ${student.name}<br>
+    <b>College:</b> ${student.college}<br>
+    <b>Phone:</b> ${student.phone}<br><br>
+    <b>Score:</b> ${score}/${questions.length}<br>
+    <b>Percentage:</b> ${percent}%
+  </p>`;
 }
 </script>
+
 </body>
 </html>
