@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Results Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:#f4f6fa;
+  padding:30px;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:#fff;
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 15px 30px rgba(0,0,0,.15);
+}
+h2{
+  text-align:center;
+  color:#002147;
+  margin-bottom:20px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+th,td{
+  padding:12px;
+  border:1px solid #ddd;
+  text-align:center;
+  font-size:14px;
+}
+th{
+  background:#002147;
+  color:#fff;
+}
+tr:nth-child(even){ background:#f8f9ff; }
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.delete{
+  background:#dc3545;
+  color:#fff;
+}
+.clear{
+  background:#002147;
+  color:#fff;
+  margin-top:15px;
+}
+.logout{
+  background:#6c757d;
+  color:#fff;
+  margin-top:15px;
+  margin-left:10px;
+}
+.login-box{
+  max-width:400px;
+  margin:auto;
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.login-btn{
+  background:#002147;
+  color:#fff;
+  width:100%;
+  margin-top:15px;
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="login-box">
+  <h2>Admin Login</h2>
+  <input type="password" id="adminPass" placeholder="Enter admin password">
+  <button class="login-btn" onclick="adminLogin()">Login</button>
+</div>
+
+<div id="dashboard" class="container" style="display:none;">
+  <h2>Admin Results Dashboard</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Phase 1</th>
+        <th>Phase 2</th>
+        <th>Total</th>
+        <th>%</th>
+        <th>Grade</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="resultsTable"></tbody>
+  </table>
+
+  <button class="clear" onclick="clearAll()">Clear All Results</button>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "admin123"; // 🔐 CHANGE THIS
+
+function adminLogin(){
+  const pass = document.getElementById("adminPass").value;
+  if(pass === ADMIN_PASSWORD){
+    sessionStorage.setItem("admin_logged", "true");
+    showDashboard();
+  } else {
+    alert("Incorrect admin password");
+  }
+}
+
+function showDashboard(){
+  document.getElementById("login").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+  loadResults();
+}
+
+function loadResults(){
+  const table = document.getElementById("resultsTable");
+  table.innerHTML = "";
+
+  const results = JSON.parse(localStorage.getItem("exam_results")) || [];
+  if(results.length === 0){
+    table.innerHTML = `<tr><td colspan="9">No results available</td></tr>`;
+    return;
+  }
+
+  results.forEach((r,i)=>{
+    table.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.name}</td>
+        <td>${r.phase1.score}/${r.phase1.total}</td>
+        <td>${r.phase2.score}/${r.phase2.total}</td>
+        <td>${r.score}/${r.total}</td>
+        <td>${r.percent}%</td>
+        <td>${r.grade}</td>
+        <td>${r.date}</td>
+        <td><button class="delete" onclick="deleteResult(${i})">Delete</button></td>
+      </tr>
+    `;
+  });
+}
+
+function deleteResult(index){
+  let results = JSON.parse(localStorage.getItem("exam_results")) || [];
+  if(confirm("Delete this result?")){
+    results.splice(index,1);
+    localStorage.setItem("exam_results", JSON.stringify(results));
+    loadResults();
+  }
+}
+
+function clearAll(){
+  if(confirm("⚠️ This will delete ALL results. Continue?")){
+    localStorage.removeItem("exam_results");
+    loadResults();
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem("admin_logged");
+  location.reload();
+}
+
+// Auto-login check
+if(sessionStorage.getItem("admin_logged") === "true"){
+  showDashboard();
+}
+</script>
+
+</body>
+</html>
