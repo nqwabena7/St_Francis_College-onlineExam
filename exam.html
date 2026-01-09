@@ -12,25 +12,82 @@
   --card:#eef3ff;
   --danger:#dc3545;
 }
-body { font-family: "Segoe UI", Arial, sans-serif; background: linear-gradient(135deg,#e9eef5,#f8fafc); margin: 0; }
-.exam-container { max-width: 900px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); padding: 35px; }
-.header { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg,#e9eef5,#f8fafc);
+  margin: 0;
+}
+.exam-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  padding: 35px;
+}
+.header {
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
 .header h1 { margin: 0; color: var(--primary); }
 .welcome { margin-top: 10px; font-weight: 600; color: var(--accent); }
 .instructions { color: #555; margin-top: 10px; font-size: 14px; }
 .question-wrapper { display: flex; justify-content: center; margin-top: 35px; }
-.question-box { background: var(--card); padding: 35px; border-radius: 16px; width: 100%; max-width: 650px; min-height: 240px; }
-.question-count { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
+.question-box {
+  background: var(--card);
+  padding: 35px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 650px;
+  min-height: 240px;
+}
+.question-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
 #questionText { font-size: 18px; margin-bottom: 25px; }
-.options label { display: block; padding: 14px 16px; margin: 12px 0; background: #fff; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
+.options label {
+  display: block;
+  padding: 14px 16px;
+  margin: 12px 0;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
 .options input { margin-right: 10px; }
-.nav-buttons { display: flex; justify-content: space-between; margin-top: 30px; }
-button { padding: 12px 28px; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; }
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
 .prev { background:#6c757d; color:#fff; }
 .next { background:var(--primary); color:#fff; }
-.submit { background: var(--accent); color: #fff; width: 100%; margin-top: 30px; font-size: 16px; display: none; }
+.submit {
+  background: var(--accent);
+  color: #fff;
+  width: 100%;
+  margin-top: 30px;
+  font-size: 16px;
+  display: none;
+}
 .logout { background: #dc3545; margin-top: 15px; }
-.warning { text-align: center; color: var(--danger); margin-top: 15px; font-weight: 600; }
+.warning {
+  text-align: center;
+  color: var(--danger);
+  margin-top: 15px;
+  font-weight: 600;
+}
 </style>
 </head>
 <body>
@@ -173,36 +230,45 @@ function nextQuestion(){
 }
 
 function prevQuestion(){
-  if(current > 0){ current--; loadQuestion(); }
+  if(current > 0){
+    current--;
+    loadQuestion();
+  }
 }
 
 loadQuestion();
 
-// ================= SUBMIT =================
+// ================= SUBMIT (FIXED) =================
 function submitExam(){
   let p1 = 0, p2 = 0;
-  phase1.forEach((q,i)=>{ if(answers[`1-${i}`]===q.c) p1++; });
-  phase2.forEach((q,i)=>{ if(answers[`2-${i}`]===q.c) p2++; });
+
+  phase1.forEach((q,i)=>{
+    if(answers[`1-${i}`] === q.c) p1++;
+  });
+
+  phase2.forEach((q,i)=>{
+    if(answers[`2-${i}`] === q.c) p2++;
+  });
 
   const total = phase1.length + phase2.length;
   const score = p1 + p2;
-  const percent = Math.round((score/total)*100);
+  const percent = Math.round((score / total) * 100);
 
   const result = {
     name: localStorage.getItem("exam_username"),
-    phase1:{ score:p1, total:phase1.length },
-    phase2:{ score:p2, total:phase2.length },
-    score,
-    total,
-    percent,
+    phase1: { score: p1, total: phase1.length },
+    phase2: { score: p2, total: phase2.length },
+    score: score,
+    total: total,
+    percent: percent,
     grade: getGrade(percent),
     date: new Date().toLocaleString()
   };
 
-  // SAVE FOR RESULT PAGE
+  // SAVE FOR STUDENT RESULT PAGE
   localStorage.setItem("latest_result", JSON.stringify(result));
 
-  // SAVE FOR ADMIN DASHBOARD
+  // SAVE FOR ADMIN DASHBOARD (APPEND)
   let all = JSON.parse(localStorage.getItem("exam_results")) || [];
   all.push(result);
   localStorage.setItem("exam_results", JSON.stringify(all));
