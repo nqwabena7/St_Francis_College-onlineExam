@@ -21,7 +21,7 @@ body {
 
 .exam-container {
   max-width: 900px;
-  margin: 40px auto;
+  margin: 30px auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.15);
@@ -35,36 +35,68 @@ body {
 }
 
 .header h1 { margin: 0; color: var(--primary); }
-.welcome { margin-top: 10px; font-weight: 600; color: var(--accent); }
-.instructions { color: #555; margin-top: 10px; font-size: 14px; }
-#logoutBtn { margin-top:10px; padding:6px 12px; background:#dc3545; color:white; border:none; border-radius:6px; cursor:pointer; }
+.welcome { margin-top: 8px; font-weight: 600; color: var(--accent); }
+
+.timer {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--danger);
+}
+
+.instructions {
+  color: #555;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+#logoutBtn {
+  margin-top:10px;
+  padding:6px 12px;
+  background:#dc3545;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 
 .question-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 35px;
+  margin-top: 30px;
 }
 
 .question-box {
   background: var(--card);
-  padding: 35px;
+  padding: 30px;
   border-radius: 16px;
   width: 100%;
   max-width: 650px;
-  min-height: 240px;
+  min-height: 260px;
 }
 
-.question-count { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
-#questionText { font-size: 18px; margin-bottom: 25px; }
+.question-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+#questionText {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
 .options label {
   display: block;
-  padding: 14px 16px;
+  padding: 14px;
   margin: 12px 0;
   background: #fff;
   border-radius: 10px;
   border: 1px solid #ccc;
   cursor: pointer;
 }
+
 .options input { margin-right: 10px; }
 
 .nav-buttons {
@@ -73,12 +105,32 @@ body {
   margin-top: 30px;
 }
 
-button { padding: 12px 28px; border: none; border-radius: 10px; cursor: pointer; font-size: 15px; }
+button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
 .prev { background:#6c757d; color:#fff; }
 .next { background:var(--primary); color:#fff; }
-.submit { background: var(--accent); color: #fff; width: 100%; margin-top: 30px; font-size: 16px; display: none; }
 
-.warning { text-align: center; color: var(--danger); margin-top: 15px; font-weight: 600; }
+.submit {
+  background: var(--accent);
+  color: #fff;
+  width: 100%;
+  margin-top: 25px;
+  font-size: 16px;
+  display: none;
+}
+
+.warning {
+  text-align: center;
+  color: var(--danger);
+  margin-top: 15px;
+  font-weight: 600;
+}
 </style>
 </head>
 
@@ -88,7 +140,11 @@ button { padding: 12px 28px; border: none; border-radius: 10px; cursor: pointer;
 
   <div class="header">
     <h1>University Online Examination</h1>
+      <h3 style="margin-top:6px; color:#444; font-weight:600;">
+      Principles and Practices of Education
+      </h3>
     <div class="welcome" id="welcomeUser"></div>
+    <div class="timer" id="timer">Time Left: 30:00</div>
     <button id="logoutBtn">Logout</button>
     <p class="instructions">
       Do not refresh or switch tabs. Three violations will auto-submit your exam.
@@ -121,36 +177,85 @@ const warningText = document.getElementById("warningText");
 const welcomeUser = document.getElementById("welcomeUser");
 const submitBtn = document.getElementById("submitBtn");
 const logoutBtn = document.getElementById("logoutBtn");
+const timerDisplay = document.getElementById("timer");
 
-// ===== LOGIN CHECK =====
+// LOGIN CHECK
 window.onload = () => {
   const name = localStorage.getItem("exam_username");
   if (!name) location.href = "login.html";
   welcomeUser.innerText = `Welcome, ${name}`;
 };
 
-// ===== QUESTIONS (ALL 20) =====
+// QUESTIONS (ALL 20)
 const questions = [
-  {q:"Which statement is not completely true about education?",o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],c:"Education is simply socialization."},
-  {q:"Education that trains emotions and social behaviour relates to?",o:["Affective","Cognitive","Emotive","Psychomotor"],c:"Affective"},
-  {q:"Learning that takes place at any learning site is?",o:["Formal","Informal","Liberal","Non-formal"],c:"Informal"},
-  {q:"Critical thinking belongs to which domain?",o:["Affective","Cognitive","Psychomotor","Thinking"],c:"Cognitive"},
-  {q:"Which cannot be regarded as a trait of liberal education?",o:["Acquisition of manipulative skills","Critical thinking","Emotional intelligence","Reflection"],c:"Acquisition of manipulative skills"},
-  {q:"Education that equips individuals with economic skills is?",o:["Formal","Informal","Liberal","Vocational"],c:"Vocational"},
-  {q:"Using counters to teach mathematics applies?",o:["Concrete to abstract","Deductive to inductive","Known to unknown","Simple to complex"],c:"Concrete to abstract"},
-  {q:"Linking lessons to learners’ experiences follows?",o:["Concrete to abstract","Easy to difficult","Known to unknown","Simple to complex"],c:"Known to unknown"},
-  {q:"Awarding certificates relates to which function?",o:["Certification","Economic","Political","Selection"],c:"Certification"},
-  {q:"Teaching as an art suggests?",o:["Teachers are made","Teachers are not born","Teaching involves intuition","Teaching requires training"],c:"Teaching involves intuition"},
-  {q:"Andragogy should be adopted at?",o:["Basic","Kindergarten","Secondary","Tertiary"],c:"Tertiary"},
-  {q:"Micro-teaching helps to?",o:["Develop specific teaching competencies","Full 90-minute lessons","Off-campus teaching","Only practicing teachers"],c:"Develop specific teaching competencies"},
-  {q:"Checking if lesson objectives were achieved is?",o:["Assessment teaching","Lesson evaluation","Reflective teaching","Team teaching"],c:"Lesson evaluation"},
-  {q:"Responsive Classroom approach focuses on?",o:["Self-paced learning","Independent learning","Academic and social skills","Safe, joyful classrooms"],c:"Safe, joyful classrooms"},
-  {q:"Foremost agency for child education is?",o:["Church","Community","Home","School"],c:"Home"},
-  {q:"Which agency of socialization is non-personal?",o:["Home","Mass media","Peer group","School"],c:"Mass media"},
-  {q:"Academic or grammar education is?",o:["Formal","Liberal","Non-formal","Vocational"],c:"Liberal"},
-  {q:"A challenge of child-centred education is?",o:["Inexpensive","Not feasible for small class","Time consuming","Undermines discipline"],c:"Time consuming"},
-  {q:"Andragogy assumes motivation becomes intrinsic.",o:["False","True"],c:"True"},
-  {q:"Teacher dictates everything in child-centred education.",o:["False","True"],c:"False"}
+ {q:"Which statement is not completely true about education?",
+  o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],
+  c:"Education is simply socialization."},
+
+ {q:"Education that trains emotions and social behaviour relates to?",
+  o:["Affective","Cognitive","Emotive","Psychomotor"],c:"Affective"},
+
+ {q:"Learning that takes place at any learning site is?",
+  o:["Formal","Informal","Liberal","Non-formal"],c:"Informal"},
+
+ {q:"Critical thinking belongs to which domain?",
+  o:["Affective","Cognitive","Psychomotor","Thinking"],c:"Cognitive"},
+
+ {q:"Which cannot be regarded as a trait of liberal education?",
+  o:["Acquisition of manipulative skills","Critical thinking","Emotional intelligence","Reflection"],
+  c:"Acquisition of manipulative skills"},
+
+ {q:"Education that equips individuals with economic skills is?",
+  o:["Formal","Informal","Liberal","Vocational"],c:"Vocational"},
+
+ {q:"Using counters to teach mathematics applies?",
+  o:["Concrete to abstract","Deductive to inductive","Known to unknown","Simple to complex"],
+  c:"Concrete to abstract"},
+
+ {q:"Linking lessons to learners’ experiences follows?",
+  o:["Concrete to abstract","Easy to difficult","Known to unknown","Simple to complex"],
+  c:"Known to unknown"},
+
+ {q:"Awarding certificates relates to which function?",
+  o:["Certification","Economic","Political","Selection"],c:"Certification"},
+
+ {q:"Teaching as an art suggests?",
+  o:["Teachers are made","Teachers are not born","Teaching involves intuition","Teaching requires training"],
+  c:"Teaching involves intuition"},
+
+ {q:"Andragogy should be adopted at?",
+  o:["Basic","Kindergarten","Secondary","Tertiary"],c:"Tertiary"},
+
+ {q:"Micro-teaching helps to?",
+  o:["Develop specific teaching competencies","Full 90-minute lessons","Off-campus teaching","Only practicing teachers"],
+  c:"Develop specific teaching competencies"},
+
+ {q:"Checking if lesson objectives were achieved is?",
+  o:["Assessment teaching","Lesson evaluation","Reflective teaching","Team teaching"],
+  c:"Lesson evaluation"},
+
+ {q:"Responsive Classroom approach focuses on?",
+  o:["Self-paced learning","Independent learning","Academic and social skills","Safe, joyful classrooms"],
+  c:"Safe, joyful classrooms"},
+
+ {q:"Foremost agency for child education is?",
+  o:["Church","Community","Home","School"],c:"Home"},
+
+ {q:"Which agency of socialization is non-personal?",
+  o:["Home","Mass media","Peer group","School"],c:"Mass media"},
+
+ {q:"Academic or grammar education is?",
+  o:["Formal","Liberal","Non-formal","Vocational"],c:"Liberal"},
+
+ {q:"A challenge of child-centred education is?",
+  o:["Inexpensive","Not feasible for small class","Time consuming","Undermines discipline"],
+  c:"Time consuming"},
+
+ {q:"Andragogy assumes motivation becomes intrinsic.",
+  o:["False","True"],c:"True"},
+
+ {q:"Teacher dictates everything in child-centred education.",
+  o:["False","True"],c:"False"}
 ];
 
 let current = 0;
@@ -160,16 +265,34 @@ function loadQuestion(){
   const q = questions[current];
   questionCount.innerText = `Question ${current+1} of ${questions.length}`;
   questionText.innerHTML = `<strong>${q.q}</strong>`;
-  options.innerHTML = q.o.map(opt => `<label><input type="radio" name="opt" value="${opt}" ${answers[current]===opt?"checked":""}>${opt}</label>`).join("");
-  submitBtn.style.display = (current === questions.length - 1) ? "block" : "none";
+  options.innerHTML = q.o.map(opt =>
+    `<label>
+      <input type="radio" name="opt" value="${opt}" ${answers[current]===opt?"checked":""}>
+      ${opt}
+    </label>`
+  ).join("");
+  submitBtn.style.display = current === questions.length - 1 ? "block" : "none";
 }
 
-options.addEventListener("change", e => answers[current] = e.target.value);
+options.onchange = e => answers[current] = e.target.value;
 function nextQuestion(){ if(current < questions.length-1){ current++; loadQuestion(); } }
 function prevQuestion(){ if(current > 0){ current--; loadQuestion(); } }
 loadQuestion();
 
-// ===== ANTI-CHEAT =====
+// TIMER (30 MINUTES)
+let timeLeft = 30 * 60;
+const timer = setInterval(()=>{
+  let min = Math.floor(timeLeft/60);
+  let sec = timeLeft % 60;
+  timerDisplay.innerText = `Time Left: ${min}:${sec.toString().padStart(2,"0")}`;
+  if(timeLeft <= 0){
+    clearInterval(timer);
+    submitExam(true);
+  }
+  timeLeft--;
+},1000);
+
+// ANTI-CHEAT
 let violations = 0;
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){
@@ -179,57 +302,37 @@ document.addEventListener("visibilitychange",()=>{
   }
 });
 
-// ===== SUBMIT WITHOUT REDIRECT + AUTO-LOGOUT =====
-function submitExam(auto=false){
+// SUBMIT
+function submitExam(){
+  clearInterval(timer);
   let score = 0;
   questions.forEach((q,i)=>{ if(answers[i]===q.c) score++; });
-
-  const percentage = Math.round((score / questions.length) * 100);
-
-  const result = {
-    name: localStorage.getItem("exam_username"),
-    score, total:questions.length, percentage,
-    date:new Date().toLocaleString()
-  };
-
-  let results = JSON.parse(localStorage.getItem("exam_results")) || [];
-  results.push(result);
-  localStorage.setItem("exam_results", JSON.stringify(results));
-
-  // Clear login to prevent going back
+  const percent = Math.round((score/questions.length)*100);
   localStorage.removeItem("exam_username");
 
-  // Display result
-  const container = document.querySelector(".exam-container");
-  container.innerHTML = `
-    <h2 style="text-align:center; color:var(--primary)">Exam Submitted Successfully!</h2>
-    <p style="text-align:center; font-size:18px; margin-top:15px;">
-      Score: <strong>${score}/${questions.length}</strong><br>
-      Percentage: <strong>${percentage}%</strong><br>
-      Grade: <strong>${getGrade(percentage)}</strong>
-    </p>
-    <p style="text-align:center; margin-top:10px; color:var(--accent)">
-      You have been logged out automatically.
-    </p>
-  `;
+  document.querySelector(".exam-container").innerHTML = `
+    <h2 style="text-align:center;color:#002147">Exam Submitted</h2>
+    <p style="text-align:center;font-size:18px">
+      Score: <b>${score}/${questions.length}</b><br>
+      Percentage: <b>${percent}%</b><br>
+      Grade: <b>${grade(percent)}</b>
+    </p>`;
 }
 
-// ===== GRADE FUNCTION =====
-function getGrade(percent){
-  if(percent >= 80) return "A";
-  if(percent >= 70) return "B";
-  if(percent >= 60) return "C";
-  if(percent >= 50) return "D";
+function grade(p){
+  if(p>=80) return "A";
+  if(p>=70) return "B";
+  if(p>=60) return "C";
+  if(p>=50) return "D";
   return "F";
 }
 
-// ===== MANUAL LOGOUT =====
-logoutBtn.addEventListener("click", ()=>{
-  if(confirm("Are you sure you want to logout? All progress will be lost.")){
+logoutBtn.onclick = ()=>{
+  if(confirm("Logout? Progress will be lost.")){
     localStorage.removeItem("exam_username");
     location.href="login.html";
   }
-});
+};
 </script>
 
 </body>
