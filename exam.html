@@ -130,11 +130,15 @@ function submitExam(){
  questions.forEach((q,i)=>{if(answers[i]===q.c) score++;});
  let percent=Math.round(score/questions.length*100);
 
- const result={name:student.name,college:student.college,phone:student.phone,score, total:questions.length, percentage:percent,date:new Date().toLocaleString()};
+ const result={name:student.name,college:student.college,phone:student.phone,score,total:questions.length,percentage:percent,date:new Date().toLocaleString()};
 
- let results=JSON.parse(localStorage.getItem("exam_results"))||[];
- results.push(result);
- localStorage.setItem("exam_results",JSON.stringify(results));
+ // Auto download CSV
+ let csv="Name,College,Phone,Score,Total,Percentage,Date\r\n";
+ csv+=[result.name,result.college,result.phone,result.score,result.total,result.percentage,result.date].join(",")+"\r\n";
+ const link=document.createElement("a");
+ link.setAttribute("href","data:text/csv;charset=utf-8,"+encodeURIComponent(csv));
+ link.setAttribute("download",`exam_result_${student.name.replace(/\s+/g,"_")}.csv`);
+ document.body.appendChild(link);link.click();document.body.removeChild(link);
 
  document.querySelector(".exam-container").innerHTML=`
  <h2 style="text-align:center;color:#002147">Exam Result</h2>
@@ -145,9 +149,7 @@ function submitExam(){
  <b>Score:</b>${score}/${questions.length}<br>
  <b>Percentage:</b>${percent}%
  </p>
- <div style="text-align:center;margin-top:20px;">
- <a href="admin.html" style="padding:12px 24px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px;text-decoration:none;">View Results (Admin)</a>
- </div>`;
+ <p style="text-align:center;margin-top:20px;color:#555;">Your result has been downloaded as CSV. Admin can collect these files to compile results.</p>`;
 }
 </script>
 </body>
