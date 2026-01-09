@@ -2,190 +2,158 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Results Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Exam Results - Admin</title>
 <style>
-body{
+body {
   font-family: "Segoe UI", Arial, sans-serif;
-  background:#f4f6fa;
-  padding:30px;
+  background: #f8fafc;
+  margin: 0;
+  padding: 0;
 }
-.container{
-  max-width:1100px;
-  margin:auto;
-  background:#fff;
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 15px 30px rgba(0,0,0,.15);
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
-h2{
-  text-align:center;
-  color:#002147;
-  margin-bottom:20px;
+h1 { text-align:center; color:#002147; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
-th,td{
-  padding:12px;
-  border:1px solid #ddd;
-  text-align:center;
-  font-size:14px;
-}
-th{
-  background:#002147;
+table th { background:#002147; color:#fff; }
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background:#28a745;
   color:#fff;
-}
-tr:nth-child(even){ background:#f8f9ff; }
-button{
-  padding:6px 12px;
   border:none;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
 }
-.delete{
-  background:#dc3545;
-  color:#fff;
-}
-.clear{
-  background:#002147;
-  color:#fff;
-  margin-top:15px;
-}
-.logout{
-  background:#6c757d;
-  color:#fff;
-  margin-top:15px;
-  margin-left:10px;
-}
-.login-box{
-  max-width:400px;
-  margin:auto;
-  background:#fff;
-  padding:30px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.15);
-}
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-.login-btn{
-  background:#002147;
-  color:#fff;
-  width:100%;
-  margin-top:15px;
-}
+button:hover { opacity:0.9; }
+button.clear { background:#dc3545; margin-left:10px; }
+#loginForm { text-align:center; margin-top:50px; }
+#loginForm input { padding:10px; font-size:16px; margin-right:10px; }
+#loginForm button { padding:10px 20px; }
 </style>
 </head>
 <body>
 
-<div id="login" class="login-box">
-  <h2>Admin Login</h2>
-  <input type="password" id="adminPass" placeholder="Enter admin password">
-  <button class="login-btn" onclick="adminLogin()">Login</button>
-</div>
-
-<div id="dashboard" class="container" style="display:none;">
-  <h2>Admin Results Dashboard</h2>
-
-  <table>
+<!-- Admin Result Container -->
+<div class="container" id="mainContainer" style="display:none;">
+  <h1>Exam Results - Admin</h1>
+  <table id="resultsTable">
     <thead>
       <tr>
         <th>#</th>
         <th>Name</th>
-        <th>Phase 1</th>
-        <th>Phase 2</th>
+        <th>College</th>
+        <th>Phone</th>
+        <th>Score</th>
         <th>Total</th>
-        <th>%</th>
+        <th>Percentage</th>
         <th>Grade</th>
         <th>Date</th>
-        <th>Action</th>
       </tr>
     </thead>
-    <tbody id="resultsTable"></tbody>
+    <tbody></tbody>
   </table>
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <button class="clear" onclick="clearResults()">Clear All Results</button>
+</div>
 
-  <button class="clear" onclick="clearAll()">Clear All Results</button>
-  <button class="logout" onclick="logout()">Logout</button>
+<!-- Admin Login -->
+<div id="loginForm">
+  <h2>Admin Login</h2>
+  <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+  <button onclick="checkPassword()">Login</button>
+  <p id="errorMsg" style="color:red; margin-top:10px;"></p>
 </div>
 
 <script>
-const ADMIN_PASSWORD = "adminadmin"; // 🔐 CHANGE THIS
+// ===== ADMIN LOGIN =====
+const adminPassword = "adminadmin"; // CHANGE THIS TO YOUR SECURE PASSWORD
 
-function adminLogin(){
-  const pass = document.getElementById("adminPass").value;
-  if(pass === ADMIN_PASSWORD){
-    sessionStorage.setItem("admin_logged", "true");
-    showDashboard();
+function checkPassword(){
+  const pass = document.getElementById("adminPassword").value;
+  if(pass === adminPassword){
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("mainContainer").style.display = "block";
+    loadResults();
   } else {
-    alert("Incorrect admin password");
+    document.getElementById("errorMsg").innerText = "Incorrect password!";
   }
 }
 
-function showDashboard(){
-  document.getElementById("login").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-  loadResults();
-}
-
+// ===== LOAD RESULTS =====
 function loadResults(){
-  const table = document.getElementById("resultsTable");
-  table.innerHTML = "";
-
   const results = JSON.parse(localStorage.getItem("exam_results")) || [];
-  if(results.length === 0){
-    table.innerHTML = `<tr><td colspan="9">No results available</td></tr>`;
-    return;
-  }
-
+  const tbody = document.querySelector("#resultsTable tbody");
+  tbody.innerHTML = "";
   results.forEach((r,i)=>{
-    table.innerHTML += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${r.name}</td>
-        <td>${r.phase1.score}/${r.phase1.total}</td>
-        <td>${r.phase2.score}/${r.phase2.total}</td>
-        <td>${r.score}/${r.total}</td>
-        <td>${r.percent}%</td>
-        <td>${r.grade}</td>
-        <td>${r.date}</td>
-        <td><button class="delete" onclick="deleteResult(${i})">Delete</button></td>
-      </tr>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.college}</td>
+      <td>${r.phone}</td>
+      <td>${r.score}</td>
+      <td>${r.total}</td>
+      <td>${r.percentage}%</td>
+      <td>${getGrade(r.percentage)}</td>
+      <td>${r.date}</td>
     `;
+    tbody.appendChild(tr);
   });
 }
 
-function deleteResult(index){
-  let results = JSON.parse(localStorage.getItem("exam_results")) || [];
-  if(confirm("Delete this result?")){
-    results.splice(index,1);
-    localStorage.setItem("exam_results", JSON.stringify(results));
-    loadResults();
-  }
+// ===== GRADE FUNCTION =====
+function getGrade(percent){
+  if(percent >= 80) return "A";
+  if(percent >= 70) return "B";
+  if(percent >= 60) return "C";
+  if(percent >= 50) return "D";
+  return "F";
 }
 
-function clearAll(){
-  if(confirm("⚠️ This will delete ALL results. Continue?")){
+// ===== EXPORT TO EXCEL =====
+function exportToExcel(){
+  const results = JSON.parse(localStorage.getItem("exam_results")) || [];
+  if(results.length === 0) { alert("No results to export"); return; }
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "Name,College,Phone,Score,Total,Percentage,Grade,Date\r\n";
+  results.forEach(r=>{
+    const row = [r.name,r.college,r.phone,r.score,r.total,r.percentage,getGrade(r.percentage),r.date].join(",");
+    csvContent += row + "\r\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `exam_results_${new Date().toLocaleDateString()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// ===== CLEAR ALL RESULTS =====
+function clearResults(){
+  if(confirm("Are you sure you want to delete all exam results? This cannot be undone.")){
     localStorage.removeItem("exam_results");
     loadResults();
+    alert("All results have been cleared.");
   }
-}
-
-function logout(){
-  sessionStorage.removeItem("admin_logged");
-  location.reload();
-}
-
-// Auto-login check
-if(sessionStorage.getItem("admin_logged") === "true"){
-  showDashboard();
 }
 </script>
 
