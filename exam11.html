@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>University Online Examination</title>
+
+<style>
+:root {
+  --primary:#002147;
+  --accent:#28a745;
+  --card:#eef3ff;
+  --danger:#dc3545;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg,#e9eef5,#f8fafc);
+  margin: 0;
+}
+
+.exam-container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  padding: 35px;
+}
+
+.header {
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.header h1 { margin: 0; color: var(--primary); }
+.welcome { margin-top: 8px; font-weight: 600; color: var(--accent); }
+
+.timer {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--danger);
+}
+
+.instructions {
+  color: #555;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+#logoutBtn {
+  margin-top:10px;
+  padding:6px 12px;
+  background:#dc3545;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.question-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.question-box {
+  background: var(--card);
+  padding: 30px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 650px;
+  min-height: 260px;
+}
+
+.question-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+#questionText {
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+
+.options label {
+  display: block;
+  padding: 14px;
+  margin: 12px 0;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.options input { margin-right: 10px; }
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.prev { background:#6c757d; color:#fff; }
+.next { background:var(--primary); color:#fff; }
+
+.submit {
+  background: var(--accent);
+  color: #fff;
+  width: 100%;
+  margin-top: 25px;
+  font-size: 16px;
+  display: none;
+}
+
+.warning {
+  text-align: center;
+  color: var(--danger);
+  margin-top: 15px;
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="exam-container">
+
+  <div class="header">
+    <h1>University Online Examination</h1>
+      <h3 style="margin-top:6px; color:#444; font-weight:600;">
+      Language and Linguistics
+      </h3>
+    <div class="welcome" id="welcomeUser"></div>
+    <div class="timer" id="timer">Time Left: 30:00</div>
+    <button id="logoutBtn">Logout</button>
+    <p class="instructions">
+      Do not refresh or switch tabs. Three violations will auto-submit your exam.
+    </p>
+  </div>
+
+  <div class="question-wrapper">
+    <div class="question-box">
+      <div class="question-count" id="questionCount"></div>
+      <div id="questionText"></div>
+      <div class="options" id="options"></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="prev" onclick="prevQuestion()">Previous</button>
+    <button class="next" onclick="nextQuestion()">Next</button>
+  </div>
+
+  <button class="submit" id="submitBtn" onclick="submitExam()">Submit Examination</button>
+  <p class="warning" id="warningText"></p>
+
+</div>
+
+<script>
+const options = document.getElementById("options");
+const questionCount = document.getElementById("questionCount");
+const questionText = document.getElementById("questionText");
+const warningText = document.getElementById("warningText");
+const welcomeUser = document.getElementById("welcomeUser");
+const submitBtn = document.getElementById("submitBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const timerDisplay = document.getElementById("timer");
+
+// LOGIN CHECK
+window.onload = () => {
+  const name = localStorage.getItem("exam_username");
+  if (!name) location.href = "login.html";
+  welcomeUser.innerText = `Welcome, ${name}`;
+};
+
+// QUESTIONS (ALL 20)
+const questions = [
+  {q:"Speech sounds could be vowels or consonants.",o:["True","False"],c:"True"},
+  {q:"IPA symbols are not universal.",o:["True","False"],c:"False"},
+  {q:"Airstream mechanism is not mandatory.",o:["True","False"],c:"False"},
+  {q:"Vowels are described by three criteria.",o:["True","False"],c:"True"},
+  {q:"Central to human interaction is?",o:["Communication","Language","Culture","Speech"],c:"Communication"},
+  {q:"Sounds of language are produced by?",o:["Speech organs","Brain","Lungs","Tongue"],c:"Speech organs"},
+  {q:"Three components of speech production?",o:["Initiation, Phonation, Articulation","Air, Voice, Sound","Speech, Talk, Hear","Tongue, Teeth, Lips"],c:"Initiation, Phonation, Articulation"},
+  {q:"Organ housing vocal folds?",o:["Larynx","Pharynx","Tongue","Nasal cavity"],c:"Larynx"},
+  {q:"Lower part of roof of mouth?",o:["Soft palate","Hard palate","Uvula","Ridge"],c:"Soft palate"},
+  {q:"Two lips touching produces?",o:["Bilabial","Dental","Alveolar","Velar"],c:"Bilabial"},
+  {q:"Lower lip to upper teeth?",o:["Labio-dental","Bilabial","Dental","Glottal"],c:"Labio-dental"},
+  {q:"Non-vibrating vocal folds produce?",o:["Voiceless","Voiced","Breathy","Nasal"],c:"Voiceless"},
+  {q:"Vocal folds positions?",o:["Three","Two","Four","Five"],c:"Three"},
+  {q:"Jaw is also called?",o:["Mandible","Maxilla","Palate","Alveolus"],c:"Mandible"},
+  {q:"Speech sounds classified by?",o:["Place & manner","Meaning","Tone","Stress"],c:"Place & manner"},
+  {q:"Only lateral sound?",o:["/l/","/r/","/n/","/j/"],c:"/l/"},
+  {q:"Same spelling & sound, different meaning?",o:["Homonyms","Synonyms","Antonyms","Hyponyms"],c:"Homonyms"},
+  {q:"Single vowel sound?",o:["Monophthong","Diphthong","Triphthong","Glide"],c:"Monophthong"},
+  {q:"Types of diphthongs?",o:["Closing & centring","Short & long","Open & close","Front & back"],c:"Closing & centring"},
+  {q:"Writing starts & ends same topic?",o:["Unity","Coherence","Clarity","Emphasis"],c:"Unity"}
+];
+
+let current = 0;
+let answers = {};
+
+function loadQuestion(){
+  const q = questions[current];
+  questionCount.innerText = `Question ${current+1} of ${questions.length}`;
+  questionText.innerHTML = `<strong>${q.q}</strong>`;
+  options.innerHTML = q.o.map(opt =>
+    `<label>
+      <input type="radio" name="opt" value="${opt}" ${answers[current]===opt?"checked":""}>
+      ${opt}
+    </label>`
+  ).join("");
+  submitBtn.style.display = current === questions.length - 1 ? "block" : "none";
+}
+
+options.onchange = e => answers[current] = e.target.value;
+function nextQuestion(){ if(current < questions.length-1){ current++; loadQuestion(); } }
+function prevQuestion(){ if(current > 0){ current--; loadQuestion(); } }
+loadQuestion();
+
+// TIMER (30 MINUTES)
+let timeLeft = 30 * 60;
+const timer = setInterval(()=>{
+  let min = Math.floor(timeLeft/60);
+  let sec = timeLeft % 60;
+  timerDisplay.innerText = `Time Left: ${min}:${sec.toString().padStart(2,"0")}`;
+  if(timeLeft <= 0){
+    clearInterval(timer);
+    submitExam(true);
+  }
+  timeLeft--;
+},1000);
+
+// ANTI-CHEAT
+let violations = 0;
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){
+    violations++;
+    warningText.innerText = `Tab switch detected (${violations}/3)`;
+    if(violations >= 3) submitExam(true);
+  }
+});
+
+// SUBMIT
+function submitExam(){
+  clearInterval(timer);
+  let score = 0;
+  questions.forEach((q,i)=>{ if(answers[i]===q.c) score++; });
+  const percent = Math.round((score/questions.length)*100);
+  localStorage.removeItem("exam_username");
+
+  document.querySelector(".exam-container").innerHTML = `
+    <h2 style="text-align:center;color:#002147">Exam Submitted</h2>
+    <p style="text-align:center;font-size:18px">
+      Score: <b>${score}/${questions.length}</b><br>
+      Percentage: <b>${percent}%</b><br>
+      Grade: <b>${grade(percent)}</b>
+    </p>`;
+}
+
+function grade(p){
+  if(p>=80) return "A";
+  if(p>=70) return "B";
+  if(p>=60) return "C";
+  if(p>=50) return "D";
+  return "F";
+}
+
+logoutBtn.onclick = ()=>{
+  if(confirm("Logout? Progress will be lost.")){
+    localStorage.removeItem("exam_username");
+    location.href="login.html";
+  }
+};
+</script>
+
+</body>
+</html>
