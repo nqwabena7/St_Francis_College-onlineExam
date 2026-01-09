@@ -73,15 +73,15 @@ const submitBtn = document.getElementById("submitBtn");
 window.onload = () => {
   const username = localStorage.getItem("exam_username");
   if(!username){
-    alert("Please login to access the exam.");
+    alert("Please login first.");
     location.href = "login.html";
   } else {
     welcomeUser.innerText = `Welcome, ${username}`;
   }
 };
 
-// ===== QUESTIONS (20) =====
-const questions = [
+// ================= PHASE 1 =================
+const phase1 = [
   {q:"Which statement is not completely true about education?",o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],c:"Education is simply socialization."},
   {q:"Education that trains emotions and social behaviour relates to?",o:["Affective","Cognitive","Emotive","Psychomotor"],c:"Affective"},
   {q:"Learning that takes place at any learning site is?",o:["Formal","Informal","Liberal","Non-formal"],c:"Informal"},
@@ -93,99 +93,119 @@ const questions = [
   {q:"Awarding certificates relates to which function?",o:["Certification","Economic","Political","Selection"],c:"Certification"},
   {q:"Teaching as an art suggests?",o:["Teachers are made","Teachers are not born","Teaching involves intuition","Teaching requires training"],c:"Teaching involves intuition"},
   {q:"Andragogy should be adopted at?",o:["Basic","Kindergarten","Secondary","Tertiary"],c:"Tertiary"},
-  {q:"Micro-teaching helps to?",o:["Develop specific teaching competencies","Full 90-minute lessons","Off-campus teaching","Only practicing teachers"],c:"Develop specific teaching competencies"},
+  {q:"Micro-teaching helps to?",o:["Develop specific teaching competencies","Full lessons","Off-campus teaching","Only practicing teachers"],c:"Develop specific teaching competencies"},
   {q:"Checking if lesson objectives were achieved is?",o:["Assessment teaching","Lesson evaluation","Reflective teaching","Team teaching"],c:"Lesson evaluation"},
-  {q:"Responsive Classroom approach focuses on?",o:["Self-paced learning","Independent learning","Academic and social skills","Safe, joyful classrooms"],c:"Safe, joyful classrooms"},
+  {q:"Responsive Classroom approach focuses on?",o:["Self-paced","Independent","Academic & social skills","Safe, joyful classrooms"],c:"Safe, joyful classrooms"},
   {q:"Foremost agency for child education is?",o:["Church","Community","Home","School"],c:"Home"},
   {q:"Which agency of socialization is non-personal?",o:["Home","Mass media","Peer group","School"],c:"Mass media"},
   {q:"Academic or grammar education is?",o:["Formal","Liberal","Non-formal","Vocational"],c:"Liberal"},
-  {q:"A challenge of child-centred education is?",o:["Inexpensive","Not feasible for small class","Time consuming","Undermines discipline"],c:"Time consuming"},
+  {q:"A challenge of child-centred education is?",o:["Cheap","Not feasible","Time consuming","Undermines discipline"],c:"Time consuming"},
   {q:"Andragogy assumes motivation becomes intrinsic.",o:["False","True"],c:"True"},
   {q:"Teacher dictates everything in child-centred education.",o:["False","True"],c:"False"}
 ];
 
-// ===== LOGIC =====
+// ================= PHASE 2 =================
+const phase2 = [
+  {q:"Speech sounds could be vowels or consonants.",o:["True","False"],c:"True"},
+  {q:"IPA symbols are not universal.",o:["True","False"],c:"False"},
+  {q:"Airstream mechanism is not mandatory.",o:["True","False"],c:"False"},
+  {q:"Vowels are described by three criteria.",o:["True","False"],c:"True"},
+  {q:"Central to human interaction is?",o:["Communication","Language","Culture","Speech"],c:"Communication"},
+  {q:"Sounds of language are produced by?",o:["Speech organs","Brain","Lungs","Tongue"],c:"Speech organs"},
+  {q:"Three components of speech production?",o:["Initiation, Phonation, Articulation","Air, Voice, Sound","Speech, Talk, Hear","Tongue, Teeth, Lips"],c:"Initiation, Phonation, Articulation"},
+  {q:"Organ housing vocal folds?",o:["Larynx","Pharynx","Tongue","Nasal cavity"],c:"Larynx"},
+  {q:"Lower part of roof of mouth?",o:["Soft palate","Hard palate","Uvula","Ridge"],c:"Soft palate"},
+  {q:"Two lips touching produces?",o:["Bilabial","Dental","Alveolar","Velar"],c:"Bilabial"},
+  {q:"Lower lip to upper teeth?",o:["Labio-dental","Bilabial","Dental","Glottal"],c:"Labio-dental"},
+  {q:"Non-vibrating vocal folds produce?",o:["Voiceless","Voiced","Breathy","Nasal"],c:"Voiceless"},
+  {q:"Vocal folds positions?",o:["Three","Two","Four","Five"],c:"Three"},
+  {q:"Jaw is also called?",o:["Mandible","Maxilla","Palate","Alveolus"],c:"Mandible"},
+  {q:"Speech sounds classified by?",o:["Place & manner","Meaning","Tone","Stress"],c:"Place & manner"},
+  {q:"Only lateral sound?",o:["/l/","/r/","/n/","/j/"],c:"/l/"},
+  {q:"Same spelling & sound, different meaning?",o:["Homonyms","Synonyms","Antonyms","Hyponyms"],c:"Homonyms"},
+  {q:"Single vowel sound?",o:["Monophthong","Diphthong","Triphthong","Glide"],c:"Monophthong"},
+  {q:"Types of diphthongs?",o:["Closing & centring","Short & long","Open & close","Front & back"],c:"Closing & centring"},
+  {q:"Writing starts & ends same topic?",o:["Unity","Coherence","Clarity","Emphasis"],c:"Unity"}
+];
+
+// ================= ENGINE =================
+let phase = 1;
+let questions = phase1;
 let current = 0;
 let answers = {};
 
 function loadQuestion(){
   const q = questions[current];
-  questionCount.innerText = `Question ${current+1} of ${questions.length}`;
+  questionCount.innerText = `Phase ${phase} — Question ${current+1} of ${questions.length}`;
   questionText.innerHTML = `<strong>${q.q}</strong>`;
   options.innerHTML = q.o.map(opt => `
     <label>
-      <input type="radio" name="opt" value="${opt}" ${answers[current]===opt?"checked":""}>
+      <input type="radio" name="opt" value="${opt}" ${answers[`${phase}-${current}`]===opt?"checked":""}>
       ${opt}
     </label>
   `).join("");
-  submitBtn.style.display = (current === questions.length - 1) ? "block" : "none";
+
+  submitBtn.style.display = (phase === 2 && current === questions.length-1) ? "block" : "none";
 }
 
-options.addEventListener("change", e => answers[current] = e.target.value);
+options.addEventListener("change", e => {
+  answers[`${phase}-${current}`] = e.target.value;
+});
 
-function nextQuestion(){ if(current < questions.length-1){ current++; loadQuestion(); } }
-function prevQuestion(){ if(current > 0){ current--; loadQuestion(); } }
+function allAnswered(arr, ph){
+  return arr.every((_,i)=>answers[`${ph}-${i}`]);
+}
+
+function nextQuestion(){
+  if(current < questions.length-1){
+    current++;
+    loadQuestion();
+  } else if(phase === 1){
+    if(!allAnswered(phase1,1)){
+      alert("⚠️ You must answer ALL Phase 1 questions before proceeding.");
+      return;
+    }
+    phase = 2;
+    questions = phase2;
+    current = 0;
+    alert("Phase 2 (Language & Linguistics) unlocked.");
+    loadQuestion();
+  }
+}
+
+function prevQuestion(){
+  if(current > 0){ current--; loadQuestion(); }
+}
 
 loadQuestion();
 
-// ===== ANTI-CHEAT =====
-let violations = 0;
-document.addEventListener("visibilitychange",()=>{
-  if(document.hidden){
-    violations++;
-    warningText.innerText = `Tab switch detected (${violations}/3)`;
-    if(violations >= 3) submitExam(true);
-  }
-});
+// ================= SUBMIT =================
+function submitExam(){
+  let p1 = 0, p2 = 0;
+  phase1.forEach((q,i)=>{ if(answers[`1-${i}`]===q.c) p1++; });
+  phase2.forEach((q,i)=>{ if(answers[`2-${i}`]===q.c) p2++; });
 
-// ===== LOGOUT FUNCTION =====
-function logout(){
-  localStorage.removeItem("exam_username");
-  alert("You have been logged out.");
-  location.href = "login.html";
-}
-
-// ===== SUBMIT EXAM =====
-function submitExam(auto=false){
-  let score = 0;
-  questions.forEach((q,i)=>{ if(answers[i]===q.c) score++; });
-  const percentage = Math.round((score / questions.length) * 100);
-  const grade = getGrade(percentage);
+  const total = phase1.length + phase2.length;
+  const score = p1 + p2;
+  const percent = Math.round((score/total)*100);
 
   const result = {
     name: localStorage.getItem("exam_username"),
-    score, total:questions.length, percentage, grade,
+    phase1:{score:p1,total:phase1.length},
+    phase2:{score:p2,total:phase2.length},
+    score,total,percent,grade:getGrade(percent),
     date:new Date().toLocaleString()
   };
 
-  let results = JSON.parse(localStorage.getItem("exam_results")) || [];
-  results.push(result);
-  localStorage.setItem("exam_results", JSON.stringify(results));
-
-  // Display result & auto-logout
-  const container = document.querySelector(".exam-container");
-  container.innerHTML = `
-    <h2 style="text-align:center; color:var(--primary)">Exam Submitted Successfully!</h2>
-    <p style="text-align:center; font-size:18px; margin-top:15px;">
-      Score: <strong>${score}/${questions.length}</strong><br>
-      Percentage: <strong>${percentage}%</strong><br>
-      Grade: <strong>${grade}</strong>
-    </p>
-    <p style="text-align:center; margin-top:10px; color:var(--accent)">
-      Thank you for completing the exam.
-    </p>
-  `;
-
-  // Auto logout after 5 seconds
-  setTimeout(logout, 5000);
+  localStorage.setItem("latest_result", JSON.stringify(result));
+  location.href = "result.html";
 }
 
-// ===== GRADE FUNCTION =====
-function getGrade(percent){
-  if(percent >= 80) return "A";
-  if(percent >= 70) return "B";
-  if(percent >= 60) return "C";
-  if(percent >= 50) return "D";
+function getGrade(p){
+  if(p>=80) return "A";
+  if(p>=70) return "B";
+  if(p>=60) return "C";
+  if(p>=50) return "D";
   return "F";
 }
 </script>
