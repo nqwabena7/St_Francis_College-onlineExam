@@ -144,7 +144,6 @@ function loadQuestion(){
       ${opt}
     </label>
   `).join("");
-
   submitBtn.style.display = (phase === 2 && current === questions.length-1) ? "block" : "none";
 }
 
@@ -168,7 +167,7 @@ function nextQuestion(){
     phase = 2;
     questions = phase2;
     current = 0;
-    alert("Phase 2 (Language & Linguistics) unlocked.");
+    alert("Phase 2 unlocked.");
     loadQuestion();
   }
 }
@@ -191,13 +190,23 @@ function submitExam(){
 
   const result = {
     name: localStorage.getItem("exam_username"),
-    phase1:{score:p1,total:phase1.length},
-    phase2:{score:p2,total:phase2.length},
-    score,total,percent,grade:getGrade(percent),
-    date:new Date().toLocaleString()
+    phase1:{ score:p1, total:phase1.length },
+    phase2:{ score:p2, total:phase2.length },
+    score,
+    total,
+    percent,
+    grade: getGrade(percent),
+    date: new Date().toLocaleString()
   };
 
+  // SAVE FOR RESULT PAGE
   localStorage.setItem("latest_result", JSON.stringify(result));
+
+  // SAVE FOR ADMIN DASHBOARD
+  let all = JSON.parse(localStorage.getItem("exam_results")) || [];
+  all.push(result);
+  localStorage.setItem("exam_results", JSON.stringify(all));
+
   location.href = "result.html";
 }
 
@@ -207,6 +216,11 @@ function getGrade(p){
   if(p>=60) return "C";
   if(p>=50) return "D";
   return "F";
+}
+
+function logout(){
+  localStorage.removeItem("exam_username");
+  location.href = "login.html";
 }
 </script>
 
