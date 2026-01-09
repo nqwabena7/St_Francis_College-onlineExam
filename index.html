@@ -3,92 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>University Examination Portal</title>
-
+<title>Exam Results - Admin</title>
 <style>
-  /* Reset */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: url('background.jpg') no-repeat center center;
-    background-size: cover;
-  }
-
-  /* Overlay for better text visibility */
-  body::before {
-    content: '';
-    position: absolute;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(0,0,0,0.4);
-    z-index: 0;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px 25px;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    max-width: 480px;
-    width: 90%;
-  }
-
-  h1 {
-    color: #002147;
-    margin-bottom: 20px;
-    font-size: 26px;
-  }
-
-  p {
-    color: #555;
-    font-size: 16px;
-    line-height: 1.6;
-    margin-bottom: 30px;
-  }
-
-  .get-started {
-    display: inline-block;
-    padding: 16px 36px;
-    background: #002147;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    transition: 0.3s;
-    width: 100%;
-    max-width: 250px;
-  }
-
-  .get-started:hover {
-    background: #014a8f;
-  }
-
-  /* Responsive Text */
-  @media (max-width: 480px) {
-    h1 { font-size: 22px; }
-    p { font-size: 15px; }
-    .get-started { font-size: 16px; padding: 14px 28px; }
-  }
+body{font-family:Arial,sans-serif;background:#f8fafc;margin:0;padding:0;}
+.container{max-width:1000px;margin:40px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 15px 30px rgba(0,0,0,0.1);}
+h1{text-align:center;color:#002147;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+table th,table td{border:1px solid #ccc;padding:10px;text-align:center;}
+table th{background:#002147;color:#fff;}
+button{margin-top:20px;padding:10px 20px;background:#28a745;color:#fff;border:none;border-radius:8px;cursor:pointer;}
+button:hover{opacity:0.9;}
+button.clear{background:#dc3545;margin-left:10px;}
+#loginForm{text-align:center;margin-top:50px;}
+#loginForm input{padding:10px;font-size:16px;margin-right:10px;}
+#loginForm button{padding:10px 20px;}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Welcome to the University Examination Portal</h1>
-  <p>
-    Get ready to take your online exam.  
-    Click the button below to start the exam immediately.
-  </p>
-  <a href="exam.html" class="get-started">Get Started</a>
+<div class="container" id="mainContainer" style="display:none;">
+  <h1>Exam Results - Admin</h1>
+  <table id="resultsTable">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>College</th>
+        <th>Phone</th>
+        <th>Score</th>
+        <th>Total</th>
+        <th>Percentage</th>
+        <th>Grade</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button onclick="exportToExcel()">Export to Excel</button>
+  <button class="clear" onclick="clearResults()">Clear All Results</button>
 </div>
 
+<div id="loginForm">
+  <h2>Admin Login</h2>
+  <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+  <button onclick="checkPassword()">Login</button>
+  <p id="errorMsg" style="color:red;margin-top:10px;"></p>
+</div>
+
+<script>
+const adminPassword="adminadmin";
+
+function checkPassword(){
+  const pass=document.getElementById("adminPassword").value;
+  if(pass===adminPassword){
+    document.getElementById("loginForm").style.display="none";
+    document.getElementById("mainContainer").style.display="block";
+    loadResults();
+  }else{
+    document.getElementById("errorMsg").innerText="Incorrect password!";
+  }
+}
+
+function loadResults(){
+  const results=JSON.parse(localStorage.getItem("exam_results"))||[];
+  const tbody=document.querySelector("#resultsTable tbody");
+  tbody.innerHTML="";
+  results.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.college}</td>
+      <td>${r.phone}</td>
+      <td>${r.score}</td>
+      <td>${r.total}</td>
+      <td>${r.percentage}%</td>
+      <td>${getGrade(r.percentage)}</td>
+      <td>${r.date}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function getGrade(p){
+  if(p>=80) return "A";
+  if(p>=70) return "B";
+  if(p>=60) return "C";
+  if(p>=50) return "D";
+  return "F";
+}
+
+function exportToExcel(){
+  const results=JSON.parse(localStorage.getItem("exam_results"))||[];
+  if(results.length===0){alert("No results to export"); return;}
+  let csvContent="data:text/csv;charset=utf-8,";
+  csvContent+="Name,College,Phone,Score,Total,Percentage,Grade,Date\r\n";
+  results.forEach(r=>{
+    csvContent+=[r.name,r.college,r.phone,r.score,r.total,r.percentage,getGrade(r.percentage),r.date].join(",")+"\r\n";
+  });
+  const encodedUri=encodeURI(csvContent);
+  const link=document.createElement("a");
+  link.setAttribute("href",encodedUri);
+  link.setAttribute("download",`exam_results_${new Date().toLocaleDateString()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function clearResults(){
+  if(confirm("Are you sure you want to delete all exam results? This cannot be undone.")){
+    localStorage.removeItem("exam_results");
+    loadResults();
+    alert("All results cleared.");
+  }
+}
+</script>
 </body>
 </html>
