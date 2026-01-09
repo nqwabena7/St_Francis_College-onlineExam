@@ -6,131 +6,67 @@
 <title>University Online Examination</title>
 
 <style>
-:root {
+:root{
   --primary:#002147;
   --accent:#28a745;
   --card:#eef3ff;
   --danger:#dc3545;
 }
 
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg,#e9eef5,#f8fafc);
-  margin: 0;
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:linear-gradient(135deg,#e9eef5,#f8fafc);
+  margin:0;
 }
 
-.exam-container {
-  max-width: 900px;
-  margin: 30px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-  padding: 35px;
+.exam-container{
+  max-width:900px;
+  margin:30px auto;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  padding:35px;
 }
 
-.header {
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
+.header{text-align:center;border-bottom:1px solid #eee;padding-bottom:15px}
+.header h1{margin:0;color:var(--primary)}
+.timer{margin-top:8px;font-size:18px;font-weight:bold;color:var(--danger)}
+.instructions{font-size:14px;color:#555}
+
+.start-screen input{
+  width:100%;padding:12px;margin:10px 0;
+  border-radius:8px;border:1px solid #ccc
+}
+.start-screen button{
+  width:100%;padding:14px;
+  background:var(--primary);color:#fff;
+  border:none;border-radius:10px;font-size:16px;cursor:pointer
 }
 
-.header h1 { margin: 0; color: var(--primary); }
-.welcome { margin-top: 8px; font-weight: 600; color: var(--accent); }
-
-.timer {
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--danger);
+.question-wrapper{display:none;justify-content:center;margin-top:30px}
+.question-box{
+  background:var(--card);
+  padding:30px;border-radius:16px;
+  width:100%;max-width:650px
+}
+.question-count{font-weight:600;color:var(--primary);margin-bottom:15px}
+.options label{
+  display:block;background:#fff;
+  padding:14px;margin:10px 0;
+  border-radius:10px;border:1px solid #ccc;
+  cursor:pointer
 }
 
-.instructions {
-  color: #555;
-  margin-top: 8px;
-  font-size: 14px;
+.nav-buttons{display:none;justify-content:space-between;margin-top:30px}
+button{padding:12px 28px;border:none;border-radius:10px;cursor:pointer}
+.prev{background:#6c757d;color:#fff}
+.next{background:var(--primary);color:#fff}
+.submit{
+  display:none;margin-top:25px;
+  width:100%;background:var(--accent);
+  color:#fff;font-size:16px
 }
-
-#logoutBtn {
-  margin-top:10px;
-  padding:6px 12px;
-  background:#dc3545;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.question-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-.question-box {
-  background: var(--card);
-  padding: 30px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 650px;
-  min-height: 260px;
-}
-
-.question-count {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--primary);
-  margin-bottom: 15px;
-}
-
-#questionText {
-  font-size: 18px;
-  margin-bottom: 25px;
-}
-
-.options label {
-  display: block;
-  padding: 14px;
-  margin: 12px 0;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.options input { margin-right: 10px; }
-
-.nav-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-}
-
-button {
-  padding: 12px 28px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.prev { background:#6c757d; color:#fff; }
-.next { background:var(--primary); color:#fff; }
-
-.submit {
-  background: var(--accent);
-  color: #fff;
-  width: 100%;
-  margin-top: 25px;
-  font-size: 16px;
-  display: none;
-}
-
-.warning {
-  text-align: center;
-  color: var(--danger);
-  margin-top: 15px;
-  font-weight: 600;
-}
+.warning{text-align:center;color:var(--danger);font-weight:600;margin-top:15px}
 </style>
 </head>
 
@@ -138,55 +74,44 @@ button {
 
 <div class="exam-container">
 
-  <div class="header">
-    <h1>University Online Examination</h1>
-      <h3 style="margin-top:6px; color:#444; font-weight:600;">
-      Principles and Practices of Education
-      </h3>
-    <div class="welcome" id="welcomeUser"></div>
-    <div class="timer" id="timer">Time Left: 30:00</div>
-    <button id="logoutBtn">Logout</button>
-    <p class="instructions">
-      Do not refresh or switch tabs. Three violations will auto-submit your exam.
-    </p>
-  </div>
+<div class="header">
+  <h1>University Online Examination(College of Education)</h1>
+  <h3>Principles and Practices of Education</h3>
+  <div class="timer" id="timer">Time Left: 30:00</div>
+  <p class="instructions">
+    Do not refresh or switch tabs. Three violations will auto-submit your exam.
+  </p>
+</div>
 
-  <div class="question-wrapper">
-    <div class="question-box">
-      <div class="question-count" id="questionCount"></div>
-      <div id="questionText"></div>
-      <div class="options" id="options"></div>
-    </div>
-  </div>
+<!-- STUDENT DETAILS -->
+<div class="start-screen" id="startScreen">
+  <h3>Student Information</h3>
+  <input id="studentName" placeholder="Student Full Name">
+  <input id="collegeName" placeholder="College Name">
+  <input id="phoneNumber" placeholder="Phone Number">
+  <button onclick="startExam()">Start Examination</button>
+</div>
 
-  <div class="nav-buttons">
-    <button class="prev" onclick="prevQuestion()">Previous</button>
-    <button class="next" onclick="nextQuestion()">Next</button>
+<!-- EXAM AREA -->
+<div class="question-wrapper" id="examArea">
+  <div class="question-box">
+    <div class="question-count" id="questionCount"></div>
+    <div id="questionText"></div>
+    <div class="options" id="options"></div>
   </div>
+</div>
 
-  <button class="submit" id="submitBtn" onclick="submitExam()">Submit Examination</button>
-  <p class="warning" id="warningText"></p>
+<div class="nav-buttons" id="navButtons">
+  <button class="prev" onclick="prevQuestion()">Previous</button>
+  <button class="next" onclick="nextQuestion()">Next</button>
+</div>
+
+<button class="submit" id="submitBtn" onclick="submitExam()">Submit Examination</button>
+<p class="warning" id="warningText"></p>
 
 </div>
 
 <script>
-const options = document.getElementById("options");
-const questionCount = document.getElementById("questionCount");
-const questionText = document.getElementById("questionText");
-const warningText = document.getElementById("warningText");
-const welcomeUser = document.getElementById("welcomeUser");
-const submitBtn = document.getElementById("submitBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const timerDisplay = document.getElementById("timer");
-
-// LOGIN CHECK
-window.onload = () => {
-  const name = localStorage.getItem("exam_username");
-  if (!name) location.href = "login.html";
-  welcomeUser.innerText = `Welcome, ${name}`;
-};
-
-// QUESTIONS (ALL 20)
 const questions = [
  {q:"Which statement is not completely true about education?",
   o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],
@@ -258,81 +183,73 @@ const questions = [
   o:["False","True"],c:"False"}
 ];
 
-let current = 0;
-let answers = {};
+let current=0, answers={}, student={}, violations=0;
+let timeLeft=30*60, timer;
+const timerDisplay=document.getElementById("timer");
 
-function loadQuestion(){
-  const q = questions[current];
-  questionCount.innerText = `Question ${current+1} of ${questions.length}`;
-  questionText.innerHTML = `<strong>${q.q}</strong>`;
-  options.innerHTML = q.o.map(opt =>
-    `<label>
-      <input type="radio" name="opt" value="${opt}" ${answers[current]===opt?"checked":""}>
-      ${opt}
-    </label>`
-  ).join("");
-  submitBtn.style.display = current === questions.length - 1 ? "block" : "none";
+function startExam(){
+  student.name=studentName.value.trim();
+  student.college=collegeName.value.trim();
+  student.phone=phoneNumber.value.trim();
+  if(!student.name||!student.college||!student.phone){
+    alert("Please fill all fields");
+    return;
+  }
+  startScreen.style.display="none";
+  examArea.style.display="flex";
+  navButtons.style.display="flex";
+  loadQuestion();
+  startTimer();
 }
 
-options.onchange = e => answers[current] = e.target.value;
-function nextQuestion(){ if(current < questions.length-1){ current++; loadQuestion(); } }
-function prevQuestion(){ if(current > 0){ current--; loadQuestion(); } }
-loadQuestion();
+function loadQuestion(){
+  const q=questions[current];
+  questionCount.innerText=`Question ${current+1} of ${questions.length}`;
+  questionText.innerHTML=`<strong>${q.q}</strong>`;
+  options.innerHTML=q.o.map(o=>`
+    <label>
+      <input type="radio" name="opt" value="${o}" ${answers[current]==o?"checked":""}>
+      ${o}
+    </label>`).join("");
+  submitBtn.style.display=current===questions.length-1?"block":"none";
+}
 
-// TIMER (30 MINUTES)
-let timeLeft = 30 * 60;
-const timer = setInterval(()=>{
-  let min = Math.floor(timeLeft/60);
-  let sec = timeLeft % 60;
-  timerDisplay.innerText = `Time Left: ${min}:${sec.toString().padStart(2,"0")}`;
-  if(timeLeft <= 0){
-    clearInterval(timer);
-    submitExam(true);
-  }
-  timeLeft--;
-},1000);
+options.onchange=e=>answers[current]=e.target.value;
+function nextQuestion(){if(current<questions.length-1){current++;loadQuestion()}}
+function prevQuestion(){if(current>0){current--;loadQuestion()}}
 
-// ANTI-CHEAT
-let violations = 0;
+function startTimer(){
+  timer=setInterval(()=>{
+    let m=Math.floor(timeLeft/60);
+    let s=timeLeft%60;
+    timerDisplay.innerText=`Time Left: ${m}:${String(s).padStart(2,"0")}`;
+    if(timeLeft--<=0) submitExam();
+  },1000);
+}
+
 document.addEventListener("visibilitychange",()=>{
   if(document.hidden){
     violations++;
-    warningText.innerText = `Tab switch detected (${violations}/3)`;
-    if(violations >= 3) submitExam(true);
+    warningText.innerText=`Tab switch detected (${violations}/3)`;
+    if(violations>=3) submitExam();
   }
 });
 
-// SUBMIT
 function submitExam(){
   clearInterval(timer);
-  let score = 0;
-  questions.forEach((q,i)=>{ if(answers[i]===q.c) score++; });
-  const percent = Math.round((score/questions.length)*100);
-  localStorage.removeItem("exam_username");
-
-  document.querySelector(".exam-container").innerHTML = `
-    <h2 style="text-align:center;color:#002147">Exam Submitted</h2>
-    <p style="text-align:center;font-size:18px">
-      Score: <b>${score}/${questions.length}</b><br>
-      Percentage: <b>${percent}%</b><br>
-      Grade: <b>${grade(percent)}</b>
-    </p>`;
+  let score=0;
+  questions.forEach((q,i)=>{if(answers[i]==q.c)score++});
+  let percent=Math.round(score/questions.length*100);
+  document.querySelector(".exam-container").innerHTML=`
+  <h2 style="text-align:center;color:#002147">Exam Result</h2>
+  <p style="text-align:center;font-size:18px">
+    <b>Name:</b> ${student.name}<br>
+    <b>College:</b> ${student.college}<br>
+    <b>Phone:</b> ${student.phone}<br><br>
+    <b>Score:</b> ${score}/${questions.length}<br>
+    <b>Percentage:</b> ${percent}%
+  </p>`;
 }
-
-function grade(p){
-  if(p>=80) return "A";
-  if(p>=70) return "B";
-  if(p>=60) return "C";
-  if(p>=50) return "D";
-  return "F";
-}
-
-logoutBtn.onclick = ()=>{
-  if(confirm("Logout? Progress will be lost.")){
-    localStorage.removeItem("exam_username");
-    location.href="login.html";
-  }
-};
 </script>
 
 </body>
