@@ -235,22 +235,50 @@ document.addEventListener("visibilitychange",()=>{
   }
 });
 
+<script>
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLX3ObDpTSUGqt4puGQkZ0ZVqs8pkrijJJHoepgXf12YmoK9pNEbVtESeKd15mX2FQQA/exec";
+
 function submitExam(){
   clearInterval(timer);
-  let score=0;
-  questions.forEach((q,i)=>{if(answers[i]==q.c)score++});
-  let percent=Math.round(score/questions.length*100);
-  document.querySelector(".exam-container").innerHTML=`
-  <h2 style="text-align:center;color:#002147">Exam Result</h2>
-  <p style="text-align:center;font-size:18px">
-    <b>Name:</b> ${student.name}<br>
-    <b>College:</b> ${student.college}<br>
-    <b>Phone:</b> ${student.phone}<br><br>
-    <b>Score:</b> ${score}/${questions.length}<br>
-    <b>Percentage:</b> ${percent}%
-  </p>`;
+
+  let score = 0;
+  questions.forEach((q,i)=>{
+    if(answers[i] === q.c) score++;
+  });
+
+  let percent = Math.round(score / questions.length * 100);
+
+  // ===== SEND TO GOOGLE SHEET =====
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: crypto.randomUUID(),
+      name: student.name,
+      college: student.college,
+      phone: student.phone,
+      score: score + "/" + questions.length,
+      percentage: percent + "%"
+    })
+  }).catch(err => console.error("Sheet Error:", err));
+
+  // ===== SHOW RESULT PAGE =====
+  document.querySelector(".exam-container").innerHTML = `
+    <h2 style="text-align:center;color:#002147">Exam Result</h2>
+    <p style="text-align:center;font-size:18px">
+      <b>Name:</b> ${student.name}<br>
+      <b>College:</b> ${student.college}<br>
+      <b>Phone:</b> ${student.phone}<br><br>
+      <b>Score:</b> ${score}/${questions.length}<br>
+      <b>Percentage:</b> ${percent}%
+    </p>
+    <p style="text-align:center;color:green;font-weight:bold">
+      Result submitted successfully
+    </p>
+  `;
 }
 </script>
 
 </body>
 </html>
+
