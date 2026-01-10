@@ -104,8 +104,6 @@ button{padding:12px 28px;border:none;border-radius:10px;cursor:pointer}
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhgd0HSjSC20503hiMWuawFchYABQTECDYArkKwhrHDf4B-OaifJYnSMKKwqPilvSbzw/exec";
-
 const questions = [
  {q:"Which statement is not completely true about education?",
   o:["An illiterate cannot be said to be educated.","Education involves acquiring knowledge.","Education is lifelong.","Education is simply socialization."],
@@ -216,19 +214,6 @@ function submitExam(){
   questions.forEach((q,i)=>{if(answers[i]===q.c)score++});
   let percent=Math.round(score/questions.length*100);
 
-  fetch(GOOGLE_SCRIPT_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      id:crypto.randomUUID(),
-      name:student.name,
-      college:student.college,
-      phone:student.phone,
-      score:`${score}/${questions.length}`,
-      percentage:`${percent}%`
-    })
-  });
-
   document.querySelector(".exam-container").innerHTML=`
     <h2 style="text-align:center;color:#002147">Exam Result</h2>
     <p style="text-align:center;font-size:18px">
@@ -239,11 +224,10 @@ function submitExam(){
       <b>Percentage:</b> ${percent}%
     </p>
     <p style="text-align:center;color:green;font-weight:bold">
-      Result submitted successfully
+      Result calculated locally
     </p>`;
 }
 </script>
 
 </body>
 </html>
-
